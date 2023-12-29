@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  name: homeassistant-deployment
+  namespace: homeassistant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: homeassistant
+  template:
+    metadata:
+      labels:
+        app: homeassistant
+    spec:
+      containers:
+        - env:
+            - name: TZ
+              value: Pacific/Auckland
+          image: ghcr.io/home-assistant/home-assistant:stable
+          name: homeassistant
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /config
+              name: config-volume
+            - mountPath: /etc/localtime
+              name: localtime-volume
+              readOnly: true
+      tolerations:
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 10
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 10
+      volumes:
+        - name: config-volume
+          persistentVolumeClaim:
+            claimName: homeassistant   # Update the claimName to the correct Longhorn persistent volume name
+        - hostPath:
+            path: /etc/localtime
+          name: localtime-volume
