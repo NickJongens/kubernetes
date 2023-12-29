@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: homeassistant-service
+  namespace: homeassistant
+spec:
+  ports:
+    - port: 8123  # Assuming Home Assistant default port
+      targetPort: 8123  # Adjust if Home Assistant uses a different port
+  selector:
+    app: homeassistant
+  type: LoadBalancer
