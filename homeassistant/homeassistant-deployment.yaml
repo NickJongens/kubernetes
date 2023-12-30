@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
         - env:
-            - name: TZ
-              value: Pacific/Auckland
+          - name: TZ
+            value: Pacific/Auckland
           image: ghcr.io/home-assistant/home-assistant:stable
           name: homeassistant
           securityContext:
@@ -28,6 +28,13 @@ spec:
             - mountPath: /etc/localtime
               name: localtime-volume
               readOnly: true
+          resources:
+            limits:
+              cpu: "2"
+              memory: "2048Mi"
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
       tolerations:
         - effect: NoExecute
           key: node.kubernetes.io/unreachable
@@ -40,7 +47,7 @@ spec:
       volumes:
         - name: config-volume
           persistentVolumeClaim:
-            claimName: homeassistant   # Update the claimName to the correct Longhorn persistent volume name
+            claimName: homeassistant  # Update the claimName to the correct Longhorn persistent volume name
         - hostPath:
             path: /etc/localtime
           name: localtime-volume
